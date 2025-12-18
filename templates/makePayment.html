@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Payment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kufam:wght@400&display=swap" rel="stylesheet">
+    <style>
+        /* Styling */
+        body {
+            font-family: 'Kufam', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #AF2874; 
+            padding: 10px; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .plane {
+            width: 70px; 
+            height: auto; 
+            margin-right: 20px; 
+        }
+        h1 {
+            margin: 0; 
+            color: white; 
+        }
+        h2 {
+            padding: 10px; 
+        }
+        details {
+            user-select: none;
+            margin: 10px 0; 
+            background-color: #D9D9D9;
+            padding: 10px; 
+        }
+        details > summary {
+            display: flex;
+            cursor: pointer;
+            align-items: center; 
+        }
+        .icon {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid white; 
+            transition: all 0.3s;
+            margin-left: auto;
+        }
+        details[open] .icon {
+            transform: rotate(180deg); 
+        }
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #AF2874; 
+            color: white; 
+            border: none; 
+            font-style: italic; 
+            font-family: 'Kufam', sans-serif;
+            padding: 10px 20px; 
+            border-radius: 10px; 
+        }
+        button:hover{
+            background-color: #ff3399;
+        }
+        
+        input, select {
+            font-family: 'Kufam', sans-serif;
+            font-style: normal;
+            margin-right: 20px; 
+            padding: 8px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+        }
+        input::placeholder {
+            font-style: italic; 
+        }
+    </style>
+</head>
+<body>
+    <!-- Header section with the airline logo and title -->
+    <header>
+        <img src="{{ url_for('static', filename='plane.png') }}" alt="Airplane logo" class="plane">
+        <h1>Adventure Air</h1>
+    </header>
+
+    <h2>Review Trip and Pay</h2>
+    <!-- Form for reviewing trip and making payment -->
+    <form action="{{ url_for('confirmation') }}" method="POST">
+       
+        <!-- Collapsible section for reviewing the selected trip -->
+        <details>
+            <summary aria-expanded="false">
+                Review Trip
+                <span class="icon"></span>
+            </summary>
+            <p><strong>Flight Selected:</strong> {{ flight.flight_number }}</p>
+            <p><strong>Departure:</strong> {{ flight.departure_time }}</p>
+            <p><strong>Arrival:</strong> {{ flight.arrival_time }}</p>
+            <p><strong>Price:</strong> {{ flight.price }}</p>
+        </details>
+        
+        <!-- Collapsible section for adding payment method -->
+        <details>
+            <summary aria-expanded="false">
+                Add Payment Method
+                <span class="icon"></span>    
+            </summary>
+            <!-- Input fields for credit card details -->
+            <input type="number" id="card-number" name="card-number" pattern="\d{16}" maxlength="16" placeholder="Card Number" required>
+            <input type="date" id="expiry" name="expiry" placeholder="Expiry Date" required>
+            <input type="number" id="cvv" name="cvv" pattern="\d{3}" maxlength="3" placeholder="CVV" required>
+            
+        </details>
+        
+        <!-- Submit button to confirm the trip -->
+        <div class="button-container">
+            <button type="submit">Confirm Trip</button>
+        </div>
+    </form>
+
+    <script>
+        // Make sure to pass the flight price correctly from Flask to JavaScript
+        const flightPrice = {{ flight.price }};  // This directly accesses the price
+    
+        function calculateTotalCost() {
+            // Retrieve add-ons from local storage
+            const addOns = JSON.parse(localStorage.getItem("addOns")) || {};
+            const addOnsTotal = (addOns.firstClass || 0) + (addOns.insurance || 0) + (addOns.baggage || 0);
+            const totalCost = flightPrice + addOnsTotal;
+        
+            // Display the total cost on the page
+            document.getElementById("totalCost").textContent = `$${totalCost.toFixed(2)}`;
+        }
+        
+        // Run calculation on page load
+        window.onload = calculateTotalCost;
+    </script>
+    
+
+    <h2>Total Cost: <span id="totalCost">$0.00</span></h2> 
+
+</body>
+</html>

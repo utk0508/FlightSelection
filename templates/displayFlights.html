@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kufam:wght@400&display=swap" rel="stylesheet">
+    <style>
+        /* Styling*/
+        body {
+            font-family: 'Kufam', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #AF2874; 
+            padding: 10px; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .plane {
+            width: 70px; 
+            height: auto; 
+            margin-right: 20px; 
+        }
+        h1 {
+            margin: 0; 
+            color: white; 
+        }
+        h2 {
+            margin-top: 20px;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .tab {
+            background-color: #eaeaea;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .tab.active {
+            background-color: #AF2874;
+            color: white;
+        }
+        .input-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        input, select {
+            font-family: 'Kufam', sans-serif;
+            font-style: normal;
+            margin-right: 20px; 
+            padding: 8px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+        }
+        input::placeholder {
+            font-style: italic; 
+        }
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: auto;
+        }
+        button {
+            background-color: #AF2874; 
+            color: white; 
+            border: none; 
+            font-family: 'Kufam', sans-serif;
+            padding: 10px 20px; 
+            border-radius: 10px;
+        }
+        
+        button:hover {
+            background-color: #ff3399;
+        }
+
+        .form-content {
+            width: 80%;
+            max-width: 600px;
+            margin: 0 auto;
+            display: none;
+        }
+        .form-content.active {
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header section with airline logo and title -->
+    <header>
+        <img src="{{ url_for('static', filename='plane.png') }}" alt="Airplane logo" class="plane">
+        <h1>Adventure Air</h1>
+    </header>
+    <h2>Available Flights from {{ from_location }} to {{ to_location }}</h2>
+    {% if flights %}
+        <form method="POST" action="{{ url_for('display_flights') }}">
+            <table>
+                <tr>
+                    <th>Select</th>
+                    <th>Flight Number</th>
+                    <th>Departure Time</th>
+                    <th>Arrival Time</th>
+                    <th>Price</th>
+                </tr>
+                {% for flight in flights %}
+                <tr>
+                    <td><input type="radio" name="flight_number" value="{{ flight[0] }}" required></td>
+                    <td>{{ flight[0] }}</td>
+                    <td>{{ flight[1] }}</td>
+                    <td>{{ flight[2] }}</td>
+                    <td>{{ flight[3] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <button type="submit">Select Flight</button>
+        </form>
+    {% else %}
+        <p>No flights found.</p>
+    {% endif %}
+</body>
+</html>

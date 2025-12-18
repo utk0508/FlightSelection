@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Seats</title>
+    <!-- Linking the Kufam font -->
+    <link href="https://fonts.googleapis.com/css2?family=Kufam:wght@400&display=swap" rel="stylesheet">
+    <style>
+        /* Styling */
+        /* Base styling */
+        body {
+            font-family: 'Kufam', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #AF2874;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .plane {
+            width: 70px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            color: white;
+        }
+
+        h2 {
+            margin: 0;
+            color: black;
+        }
+
+        main {
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        
+        /* Seat Selection */
+        .seat-info {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend span {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border-radius: 3px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: black;
+        }
+
+        .first-class {
+            background-color: #5fc0c0; /* Light teal */
+        }
+
+        .economy {
+            background-color: #6a8ebd; /* Light blue */
+        }
+
+        .selected {
+            background-color: #cc0066; /* Selected seat */
+        }
+
+        .unavailable {
+            background-color: #ccc; /* Unavailable seat */
+        }
+
+        .selected-seat-display {
+            background-color: #cc0066;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .confirm-btn {
+            background-color: #AF2874; 
+            color: white; 
+            border: none; 
+            font-family: 'Kufam', sans-serif;
+            padding: 10px 20px; 
+            border-radius: 10px;
+        }
+
+        .confirm-btn:hover{
+            background-color: #ff3399;
+        }
+        .confirm-btn-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: auto;
+        }
+        
+        .seat-map {
+            display: grid;
+            grid-template-columns: repeat(6, auto);
+            grid-gap: 10px;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .seat {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .first-class-seat {
+            background-color: #5fc0c0;
+            color: black;
+        }
+
+        .economy-seat {
+            background-color: #6a8ebd;
+            color: black;
+        }
+
+        .unavailable-seat {
+            background-color: #ccc;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .selected-seat {
+            background-color: #cc0066;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with logo and title -->
+    <header>
+        <img src="{{ url_for('static', filename='plane.png') }}" alt="Airplane logo" class="plane">
+        <h1>Adventure Air</h1>
+    </header>
+    
+    <h2>Select Seat:</h2>
+    <!-- Seat selection form -->
+    <form id="seatForm" method="POST" action="{{ url_for('seat_selection') }}">
+        <div class="container">
+            <!-- Seat Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="first-class"></span> First Class
+                </div>
+                <div class="legend-item">
+                    <span class="economy"></span> Economy
+                </div>
+                <div class="legend-item">
+                    <span class="selected"></span> Selected Seat
+                </div>
+                <div class="legend-item">
+                    <span class="unavailable"></span> Unavailable
+                </div>
+            </div>
+            
+            <!-- Seat map generation -->
+            <div class="seat-map">
+                {% for seat in seat_map %}
+                    <div 
+                        class="seat {{ seat.class }} {% if not seat.available %}unavailable-seat{% endif %}"
+                        data-seat="{{ seat.seat }}"
+                        {% if seat.available %} onclick="selectSeat('{{ seat.seat }}', this)" {% endif %}
+                    >
+                        {{ seat.seat }}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <h2 id="selected-seat-display" style="text-align: center;">Seat Selected: None</h2>
+            <input type="hidden" id="selected_seat" name="selected_seat" value="">
+            <div class=confirm-btn-container> 
+                <button type="button" class="confirm-btn" onclick="confirmSeat()">Confirm</button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        let selectedSeat = null;
+
+        function selectSeat(seat, element) {
+            if (element.classList.contains('unavailable-seat')) {
+                return; // Don't allow unavailable seats to be selected
+            }
+
+            // Deselect previous seat
+            if (selectedSeat) {
+                selectedSeat.classList.remove('selected-seat');
+            }
+
+            // Select new seat
+            selectedSeat = element;
+            element.classList.add('selected-seat');
+            document.getElementById('selected-seat-display').innerText = "Seat Selected: " + seat;
+            document.getElementById('selected_seat').value = seat;
+        }
+
+        function confirmSeat() {
+            document.getElementById('seatForm').submit();
+        }
+    </script>
+</body>
+</html>

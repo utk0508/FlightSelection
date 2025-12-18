@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Ons</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kufam:wght@400&display=swap" rel="stylesheet">
+    <style>
+        /* Styling */
+        /* Base styling */
+        body {
+            font-family: 'Kufam', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #AF2874;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .plane {
+            width: 70px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            color: white;
+        }
+
+        h2, h3 {
+            margin: 0;
+            color: black;
+        }
+
+        main {
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+        }
+
+        /* Add-ons section */
+        .add-ons-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .add-on {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 30%;
+            text-align: center;
+        }
+
+        .add-on img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .add-on h3 {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .add-btn, button {
+            background-color: #AF2874;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Kufam', sans-serif;
+            margin-top: 10px;
+        }
+
+        .add-btn:hover, button:hover {
+            background-color: #ff3399;
+        }
+
+        /* Counter for baggage */
+        .baggage-counter {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .counter-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            margin: 0 10px;
+        }
+
+        #baggageCount {
+            font-size: 20px;
+            color: black;
+        }
+
+        /* Confirm button */
+        button {
+            background-color: #AF2874;
+            color: white;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+    
+    </style>
+</head>
+<body>
+    <!-- Header with logo and title -->
+    <header>
+        <img src="{{ url_for('static', filename='plane.png') }}" alt="Airplane logo" class="plane">
+        <h1>Adventure Air</h1>
+    </header>
+
+    <!-- Main content: Add-ons selection -->
+    <main>
+            <h2>Select Add-Ons</h2>
+            <div class="add-ons-grid">
+                
+                <!-- First Class Upgrade -->
+                <div class="add-on">
+                    <img src="{{ url_for('static', filename='firstClass.png') }}" alt="Upgrade to First Class">
+                    <h3>FIRST CLASS UPGRADE</h3>
+                    <h3>$250</h3>
+                    <button type="button" class="add-btn" id="addFirstClassBtn">ADD</button>
+                </div>
+
+                <!-- Extra Baggage -->
+                <div class="add-on">
+                    <img src="{{ url_for('static', filename='extraBaggage.png') }}" alt="Extra Baggage">
+                    <h3>EXTRA BAGGAGE</h3>
+                    <h3>$60 for each</h3>
+                    <div class="baggage-counter">
+                        <button type="button" class="counter-btn" id="decreaseBaggageBtn">-</button>
+                        <span id="baggageCount">0</span>
+                        <button type="button" class="counter-btn" id="increaseBaggageBtn">+</button>
+                    </div>
+                </div>
+
+                <!-- Insurance -->
+                <div class="add-on">
+                    <img src="{{ url_for('static', filename='insurance.png') }}" alt="Travel Insurance">
+                    <h3>INSURANCE</h3>
+                    <h3>$100</h3>
+                    <button type="button" class="add-btn" id="addInsuranceBtn">ADD</button>
+                </div>
+            </div>
+
+            <!-- Button to confirm add-ons -->
+            <div class="button-container"></div>
+            <form action="{{ url_for('traveller_info') }}" method="GET">
+                <button type="submit" class="button" id="confirmSeat">Confirm Add Ons</button>
+            </form>
+    </main>
+
+    <script>
+        // Variables to store add-on selections
+        let firstClassAdded = false;
+        let insuranceAdded = false;
+        let baggageCount = 0;
+    
+        // Update local storage whenever an add-on is added or removed
+        function updateAddOns() {
+            const addOns = {
+                firstClass: firstClassAdded ? 250 : 0,
+                insurance: insuranceAdded ? 100 : 0,
+                baggage: baggageCount * 60
+            };
+            localStorage.setItem("addOns", JSON.stringify(addOns));
+        }
+    
+        // Handle First Class Add button
+        document.getElementById("addFirstClassBtn").addEventListener("click", function() {
+            firstClassAdded = !firstClassAdded;
+            this.textContent = firstClassAdded ? "REMOVE" : "ADD";
+            this.style.backgroundColor = firstClassAdded ? "#ff3399" : "#AF2874";
+            updateAddOns();
+        });
+    
+        // Handle Insurance Add button
+        document.getElementById("addInsuranceBtn").addEventListener("click", function() {
+            insuranceAdded = !insuranceAdded;
+            this.textContent = insuranceAdded ? "REMOVE" : "ADD";
+            this.style.backgroundColor = insuranceAdded ? "#ff3399" : "#AF2874";
+            updateAddOns();
+        });
+    
+        // Handle Baggage Counter buttons
+        document.getElementById("increaseBaggageBtn").addEventListener("click", function() {
+            baggageCount += 1;
+            document.getElementById("baggageCount").textContent = baggageCount;
+            updateAddOns();
+        });
+    
+        document.getElementById("decreaseBaggageBtn").addEventListener("click", function() {
+            if (baggageCount > 0) {
+                baggageCount -= 1;
+                document.getElementById("baggageCount").textContent = baggageCount;
+                updateAddOns();
+            }
+        });
+    </script>
+    
+</body>
+</html>

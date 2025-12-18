@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Payment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kufam:wght@400&display=swap" rel="stylesheet">
+    <style>
+        /* Styling */
+        body {
+            font-family: 'Kufam', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #AF2874; 
+            padding: 10px; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .plane {
+            width: 70px; 
+            height: auto; 
+            margin-right: 20px; 
+        }
+        h1 {
+            margin: 0; 
+            color: white; 
+        }
+        .plane-ticket{
+            width: 80%;
+            max-width: 1000px; 
+            height: auto; 
+            display: block;
+            margin-left: auto;    
+            margin-right: auto;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header section with the airline logo and name -->
+    <header>
+        <img src="{{ url_for('static', filename='plane.png') }}" alt="Airplane logo" class="plane">
+        <h1>Adventure Air</h1>
+    </header>
+
+    <!-- Display a confirmation image for ticket -->
+    <img src="{{ url_for('static', filename='plane-ticket.png') }}" alt="Confirmation" class="plane-ticket">
+</body>
+</html>
